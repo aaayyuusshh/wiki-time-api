@@ -1,5 +1,7 @@
 require("dotenv").config();
 const express = require("express");
+const articleRoutes = require("./routes/articleRoutes");
+
 const app = express();
 app.use(express.json());
 
@@ -9,7 +11,9 @@ app.listen(PORT, () => {
     console.log(`🎧 server listening on port ${PORT}`);
 })
 
-// routes
+// root route
 app.get("/", (req, res) => {
     res.send("hello from WikiTime api!");
 });
+
+app.use("/api", articleRoutes);
