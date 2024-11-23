@@ -18,8 +18,10 @@
   },
   "homepage": "https://github.com/aaayyuusshh/wiki-time-api#readme",
   "dependencies": {
+    "cheerio": "^1.0.0",
     "dotenv": "^16.4.5",
-    "express": "^4.21.1"
+    "express": "^4.21.1",
+    "jsdom": "^25.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"
