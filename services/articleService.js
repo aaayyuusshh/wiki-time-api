@@ -1,6 +1,7 @@
 const {JSDOM} = require("jsdom");
 const TEST_HTML = require("./testHTML.js");
 const parser = require("./utils/parser.js");
+const extractor = require("./utils/extractor.js");
 
 async function getArticleHTML(title) {
     const url = "https://en.wikipedia.org/w/api.php?" +
@@ -31,4 +32,15 @@ function getArticleText(title) {
     return articleText;
 }
 
-module.exports = { getArticleHTML, getArticleText };
+
+function getNumberOfWords(title) {
+    // const rawHtml = await getArticleHTML(title);
+    const rawHtml = TEST_HTML;
+    const articleText = getArticleText(rawHtml);
+    const articleTextList = extractor.extractArticleWords(articleText);
+
+    return articleTextList.length;
+}
+
+
+module.exports = { getArticleHTML, getArticleText, getNumberOfWords };
