@@ -32,6 +32,15 @@ function getArticleText(title) {
     return articleText;
 }
 
+function getNumberOfImages(title) {
+      // const rawHtml = await getArticleHTML(title);
+      const rawHtml = TEST_HTML;
+      const dom = new JSDOM(rawHtml);
+      const contentElement = dom.window.document.querySelector(".mw-content-ltr");
+      parser.parseText(contentElement);
+  
+      return parser.getImageCount();
+}
 
 function getNumberOfWords(title) {
     // const rawHtml = await getArticleHTML(title);
@@ -43,4 +52,4 @@ function getNumberOfWords(title) {
 }
 
 
-module.exports = { getArticleHTML, getArticleText, getNumberOfWords };
+module.exports = { getArticleHTML, getArticleText, getNumberOfImages, getNumberOfWords };
