@@ -1,6 +1,10 @@
 const ParserModule = (function () {
     let imageCount = 0;
 
+    function resetImageCount() {
+        imageCount = 0;
+    }
+
     function isReferencesSection(node) {
         return (
             node.nodeType === node.ELEMENT_NODE &&
@@ -66,7 +70,8 @@ const ParserModule = (function () {
 
     return {
         parseText,
-        getImageCount
+        getImageCount,
+        resetImageCount
     };
 })();
 

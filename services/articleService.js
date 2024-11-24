@@ -26,6 +26,7 @@ async function parseArticleHTML(title) {
     // const rawHtml = TEST_HTML;
     const dom = new JSDOM(rawHtml);
     const contentElement = dom.window.document.querySelector(".mw-content-ltr");
+    parser.resetImageCount();
     const articleText = parser.parseText(contentElement);
     const numOfImages = parser.getImageCount();
 
