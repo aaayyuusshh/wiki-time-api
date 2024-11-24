@@ -1,27 +1,32 @@
 const express = require("express");
+const articleService = require("../services/articleService.js");
+
 const router = express.Router();
 
-router.get("/words/:title", (req, res, next) => {
-    const numOfWords = 1000;
+router.get("/words/:title", async (req, res, next) => {
+    const title = req.params.title;
+    const numOfWords = await articleService.getNumberOfWords(title);
     res.status(200).json({
-        "title": req.params.title,
-        "numOfWords": numOfWords
+       title,
+       numOfWords
     });
 });
 
-router.get("/images/:title", (req, res, next) => {
-    const numOfImages = 1;
+router.get("/images/:title", async (req, res, next) => {
+    const title = req.params.title;
+    const numOfImages = await articleService.getNumberOfImages(title);
     res.status(200).json({
-        "title": req.params.title,
-        "numOfImages": numOfImages
+       title,
+       numOfImages
     });
 });
 
-router.get("/reading-time/:title", (req, res, next) => {
-    const readingTime = 10;
+router.get("/reading-time/:title", async (req, res, next) => {
+    const title = req.params.title;
+    const readingTime = await articleService.getReadingTime(title);
     res.status(200).json({
-        "title": req.params.title,
-        "readingTime": readingTime
+       title,
+       readingTime
     });
 });
 
@@ -31,6 +36,5 @@ router.get("/info/:title", (req, res, next) => {
         "info": "not sure how to structure this yet"
     });
 });
-
 
 module.exports = router;

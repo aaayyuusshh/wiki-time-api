@@ -9,7 +9,7 @@ async function getArticleHTML(title) {
     new URLSearchParams({
         origin: "*",
         action: "parse",
-        page: title,
+        page: title, 
         format: "json",
         prop: "text"
     });
@@ -17,7 +17,6 @@ async function getArticleHTML(title) {
     const req = await fetch(url);
     const json = await req.json();
     const rawHtml = json.parse.text["*"]; 
-    
     return rawHtml;
 }
 
@@ -28,23 +27,22 @@ async function parseArticleHTML(title) {
     const contentElement = dom.window.document.querySelector(".mw-content-ltr");
     parser.resetImageCount();
     const articleText = parser.parseText(contentElement);
-    const numOfImages = parser.getImageCount();
+    const numOfImages = parser.getImageCount(); 
 
     return { articleText, numOfImages };
 }
 
-function getArticleText(title) {
-    return parseArticleHTML(title).articleText;
+async function getArticleText(title) {
+    return (await parseArticleHTML(title)).articleText;
 }
 
-function getNumberOfImages(title) {
-    return parseArticleHTML(title).numOfImages;
+async function getNumberOfImages(title) {
+    return (await parseArticleHTML(title)).numOfImages;
 }
 
-function getNumberOfWords(title) {
-    // const rawHtml = await getArticleHTML(title);
-    const rawHtml = TEST_HTML;
-    const articleText = getArticleText(rawHtml);
+async function getNumberOfWords(title) {
+    const articleText = await getArticleText(title);
+    console.log(articleText);
     const articleTextList = extractor.extractArticleWords(articleText);
 
     return articleTextList.length;
