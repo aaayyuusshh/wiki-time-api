@@ -18,7 +18,11 @@ async function getArticleHTML(title) {
     const json = await req.json();
 
     if(isErrorResponse(json)) {
-        throw new Error(json.error.info);
+        throw { message: json.error.info, statusCode: 400 }; 
+    }
+
+    if(!json.parse.text["*"]) {
+        throw { message: "Internal server error", statusCode: 500 };
     }
 
     const rawHtml = json.parse.text["*"]; 

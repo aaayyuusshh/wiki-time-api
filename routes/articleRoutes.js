@@ -12,7 +12,7 @@ router.get("/words/:title", async (req, res, next) => {
             numOfWords
          });
     } catch (error) {
-        res.status(400).json({
+        res.status(error.statusCode).json({
             error: error.message
         });
     }
@@ -27,7 +27,7 @@ router.get("/images/:title", async (req, res, next) => {
            numOfImages
         });
     } catch (error) {
-        res.status(400).json({
+        res.status(error.statusCode).json({
             error: error.message
         });
     }
@@ -42,7 +42,7 @@ router.get("/reading-time/:title", async (req, res, next) => {
            readingTime
         });
     } catch (error) {
-        res.status(400).json({
+        res.status(error.statusCode).json({
             error: error.message
         });
     }
