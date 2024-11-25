@@ -5,29 +5,47 @@ const router = express.Router();
 
 router.get("/words/:title", async (req, res, next) => {
     const title = req.params.title;
-    const numOfWords = await articleService.getNumberOfWords(title);
-    res.status(200).json({
-       title,
-       numOfWords
-    });
+    try {
+        const numOfWords = await articleService.getNumberOfWords(title);
+        res.status(200).json({
+            title,
+            numOfWords
+         });
+    } catch (error) {
+        res.status(400).json({
+            error: error.message
+        });
+    }
 });
 
 router.get("/images/:title", async (req, res, next) => {
     const title = req.params.title;
-    const numOfImages = await articleService.getNumberOfImages(title);
-    res.status(200).json({
-       title,
-       numOfImages
-    });
+    try {
+        const numOfImages = await articleService.getNumberOfImages(title);
+        res.status(200).json({
+           title,
+           numOfImages
+        });
+    } catch (error) {
+        res.status(400).json({
+            error: error.message
+        });
+    }
 });
 
 router.get("/reading-time/:title", async (req, res, next) => {
     const title = req.params.title;
-    const readingTime = await articleService.getReadingTime(title);
-    res.status(200).json({
-       title,
-       readingTime
-    });
+    try {
+        const readingTime = await articleService.getReadingTime(title);
+        res.status(200).json({
+           title,
+           readingTime
+        });
+    } catch (error) {
+        res.status(400).json({
+            error: error.message
+        });
+    }
 });
 
 router.get("/info/:title", (req, res, next) => {

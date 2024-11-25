@@ -16,8 +16,17 @@ async function getArticleHTML(title) {
   
     const req = await fetch(url);
     const json = await req.json();
+
+    if(isErrorResponse(json)) {
+        throw new Error(json.error.info);
+    }
+
     const rawHtml = json.parse.text["*"]; 
     return rawHtml;
+}
+
+function isErrorResponse(json) {
+    return json.error ? true : false;
 }
 
 async function parseArticleHTML(title) {
