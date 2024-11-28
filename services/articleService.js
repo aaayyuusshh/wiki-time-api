@@ -3,6 +3,7 @@ const TEST_HTML = require("./testHTML.js");
 const parser = require("./utils/parser.js");
 const extractor = require("./utils/extractor.js");
 const timeCalculator = require("./utils/timeCalculator.js");
+const ApiError = require("./utils/ApiError.js");
 
 async function getArticleHTML(title) {
     const url = "https://en.wikipedia.org/w/api.php?" +
@@ -18,11 +19,11 @@ async function getArticleHTML(title) {
     const json = await req.json();
 
     if(isErrorResponse(json)) {
-        throw { message: json.error.info, statusCode: 400 }; 
+        throw new ApiError(json.error.info, 400); 
     }
 
     if(!json.parse.text["*"]) {
-        throw { message: "Internal server error", statusCode: 500 };
+        throw new ApiError("Internal server error", 500);
     }
 
     const rawHtml = json.parse.text["*"]; 

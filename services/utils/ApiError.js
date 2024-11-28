@@ -5,3 +5,5 @@ class ApiError extends Error {
         this.name = ApiError;
     }
 }
+
+module.exports = ApiError;
