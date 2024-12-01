@@ -28,13 +28,12 @@ async function getArticleHTML(title) {
             throw new ApiError(json.error.info, 400);
         }
 
-        if(!json.parse.text["*"]) {
+        const rawHtml = json.parse.text["*"];
+        if(!rawHtml) {
             throw new ApiError(
                 "Article content is missing in Wikipedia API response",
                 500);
         }
-
-        const rawHtml = json.parse.text["*"];
 
         return rawHtml;
     } catch (error){
