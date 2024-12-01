@@ -29,7 +29,9 @@ async function getArticleHTML(title) {
         }
 
         if(!json.parse.text["*"]) {
-            throw new ApiError("Internal server error", 500);
+            throw new ApiError(
+                "Article content is missing in Wikipedia API response",
+                500);
         }
 
         const rawHtml = json.parse.text["*"];
@@ -37,7 +39,9 @@ async function getArticleHTML(title) {
         return rawHtml;
     } catch (error){
         if(!(error instanceof ApiError)) {
-            throw new ApiError(error.message, 500);
+            throw new ApiError(
+                error.message || "An unexpected error occurred",
+                500);
         }
 
         throw error;
