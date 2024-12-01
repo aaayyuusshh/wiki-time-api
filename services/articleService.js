@@ -14,20 +14,34 @@ async function getArticleHTML(title) {
         format: "json",
         prop: "text"
     });
-  
-    const req = await fetch(url);
-    const json = await req.json();
 
-    if(isErrorResponse(json)) {
-        throw new ApiError(json.error.info, 400); 
+    try {
+        const response = await fetch(url);
+        if(!response.ok) {
+            throw new ApiError(
+                `Wikipedia API returned HTTP error: ${response.statusText}`,
+                response.status);
+        }
+
+        const json = await response.json();
+        if(isErrorResponse(json)) {
+            throw new ApiError(json.error.info, 400);
+        }
+
+        if(!json.parse.text["*"]) {
+            throw new ApiError("Internal server error", 500);
+        }
+
+        const rawHtml = json.parse.text["*"];
+
+        return rawHtml;
+    } catch (error){
+        if(!(error instanceof ApiError)) {
+            throw new ApiError(error.message, 500);
+        }
+
+        throw error;
     }
-
-    if(!json.parse.text["*"]) {
-        throw new ApiError("Internal server error", 500);
-    }
-
-    const rawHtml = json.parse.text["*"]; 
-    return rawHtml;
 }
 
 function isErrorResponse(json) {
