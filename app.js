@@ -19,4 +19,11 @@ app.get("/", (req, res) => {
 
 app.use("/api", articleRoutes);
 
+// catch all middleware
+app.use((req, res) => {
+    res.status(404).json({
+        error: "404 Endpoint not found."
+    });
+});
+
 app.use(errorHandler);
