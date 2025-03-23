@@ -1,3 +1,4 @@
+//💡 this middleware will only be called when next(err) is used somewhere in the code
 function errorHandler(err, req, res, next) {
     const statusCode = err.statusCode || 500;
     const message = err.message || "Internal Server Error";
