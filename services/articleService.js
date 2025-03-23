@@ -4,8 +4,19 @@ const parser = require("./utils/parser.js");
 const extractor = require("./utils/extractor.js");
 const timeCalculator = require("./utils/timeCalculator.js");
 const ApiError = require("./utils/ApiError.js");
+const redisClient = require("../cache/redisClient.js");
 
 async function getArticleHTML(title) {
+    const cacheKey = `wiki:html:${title.toLowerCase()}`;
+
+    // try redis cache first
+    const cachedHTML = await redisClient.get(cacheKey);
+    if(cachedHTML) {
+        console.log(`🔁 [CACHE HIT] Wikipedia article "${title}"`);
+        return cachedHTML;
+    }
+
+    // make external call if not in cache
     const url = "https://en.wikipedia.org/w/api.php?" +
     new URLSearchParams({
         origin: "*",
@@ -34,6 +45,10 @@ async function getArticleHTML(title) {
                 "Article content is missing in Wikipedia API response",
                 500);
         }
+
+        // cache the raw html in redis for 24hrs
+        await redisClient.setEx(cacheKey, 86400, rawHtml);
+        console.log(`❌ [CACHE MISS] Cached Wikipedia article "${title}"`);
 
         return rawHtml;
     } catch (error){
@@ -73,7 +88,7 @@ async function getNumberOfImages(title) {
 
 async function getNumberOfWords(title) {
     const articleText = await getArticleText(title);
-    console.log(articleText);
+    // console.log(articleText);
     const articleTextList = extractor.extractArticleWords(articleText);
 
     return articleTextList.length;
