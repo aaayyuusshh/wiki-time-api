@@ -7,16 +7,6 @@ const ApiError = require("./utils/ApiError.js");
 const redisClient = require("../cache/redisClient.js");
 
 async function getArticleHTML(title) {
-    const cacheKey = `wiki:html:${title.toLowerCase()}`;
-
-    // try redis cache first
-    const cachedHTML = await redisClient.get(cacheKey);
-    if(cachedHTML) {
-        console.log(`🔁 [CACHE HIT] Wikipedia article "${title}"`);
-        return cachedHTML;
-    }
-
-    // make external call if not in cache
     const url = "https://en.wikipedia.org/w/api.php?" +
     new URLSearchParams({
         origin: "*",
@@ -46,10 +36,6 @@ async function getArticleHTML(title) {
                 500);
         }
 
-        // cache the raw html in redis for 24hrs
-        await redisClient.setEx(cacheKey, 86400, rawHtml);
-        console.log(`❌ [CACHE MISS] Cached Wikipedia article "${title}"`);
-
         return rawHtml;
     } catch (error){
         if(!(error instanceof ApiError)) {
@@ -66,39 +52,58 @@ function isErrorResponse(json) {
     return json.error ? true : false;
 }
 
-async function parseArticleHTML(title) {
+async function getParsedData(title) {
+    // try to get computed values from cache frist
+    const cacheKey = `wiki:parsed:${title.toLowerCase()}`;
+    const cachedData = await redisClient.get(cacheKey);
+    if(cachedData) {
+        console.log(`🔁 [CACHE HIT] Parsed data for "${title}"`);
+        return JSON.parse(cachedData);
+    }
+
+    // not cached? get raw html, parse, and compute values
     const rawHtml = await getArticleHTML(title);
     // const rawHtml = TEST_HTML;
     const dom = new JSDOM(rawHtml);
     const contentElement = dom.window.document.querySelector(".mw-content-ltr");
+    
     parser.resetImageCount();
     const articleText = parser.parseText(contentElement);
     const numOfImages = parser.getImageCount(); 
+    const numOfWords = extractor.extractArticleWords(articleText).length;
+    const readingTime = timeCalculator.calculateReadingTime(numOfWords, numOfImages);
 
-    return { articleText, numOfImages };
+    const parsedResult = {
+        articleText,
+        numOfImages,
+        numOfWords,
+        readingTime
+    };
+
+    // cache computed results in Redis for 24hrs
+    await redisClient.setEx(cacheKey, 86400, JSON.stringify(parsedResult));
+    console.log(`❌ [CACHE MISS] Cached parsed data for "${title}"`);
+   
+    return parsedResult;
 }
 
 async function getArticleText(title) {
-    return (await parseArticleHTML(title)).articleText;
+    const {articleText} = await getParsedData(title);
+    return articleText;
 }
 
 async function getNumberOfImages(title) {
-    return (await parseArticleHTML(title)).numOfImages;
+    const {numOfImages} = await getParsedData(title);
+    return numOfImages;
 }
 
 async function getNumberOfWords(title) {
-    const articleText = await getArticleText(title);
-    // console.log(articleText);
-    const articleTextList = extractor.extractArticleWords(articleText);
-
-    return articleTextList.length;
+    const {numOfWords} = await getParsedData(title);
+    return numOfWords;
 }
 
 async function getReadingTime(title) {
-    const {articleText, numOfImages} = await parseArticleHTML(title);
-    const numOfWords = extractor.extractArticleWords(articleText).length;
-    const readingTime = timeCalculator.calculateReadingTime(numOfWords, numOfImages);
-    
+    const {readingTime} = await getParsedData(title);
     return readingTime;
 }
 
