@@ -12,6 +12,7 @@ router.get("/words/:title", async (req, res, next) => {
     const title = req.params.title;
     try {
         const numOfWords = await articleService.getNumberOfWords(title);
+        res.set("Cache-Control", "public, max-age=3600");
         res.status(200).json({
             title,
             numOfWords
@@ -29,6 +30,7 @@ router.get("/images/:title", async (req, res, next) => {
     const title = req.params.title;
     try {
         const numOfImages = await articleService.getNumberOfImages(title);
+        res.set("Cache-Control", "public, max-age=3600");
         res.status(200).json({
            title,
            numOfImages
@@ -46,6 +48,7 @@ router.get("/reading-time/:title", async (req, res, next) => {
     const title = req.params.title;
     try {
         const readingTime = await articleService.getReadingTime(title);
+        res.set("Cache-Control", "public, max-age=3600");
         res.status(200).json({
            title,
            readingTime
