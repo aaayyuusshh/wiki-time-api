@@ -13,7 +13,7 @@ app.listen(PORT, () => {
     console.log(`🎧 server listening on port ${PORT}`);
 })
 
-// basic rate limiter: 100 requests per 15 minutes per IP
+// basic rate limiter: 50 requests per 5 minutes per IP
 const limiter = rateLimit({
   windowMs: 5 * 60 * 1000,
   max: 50,
